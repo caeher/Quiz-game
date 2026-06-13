@@ -548,7 +548,7 @@ body {
 /* ---------- Question Card ---------- */
 .question-card {
   width: 100%;
-  max-width: 760px;
+  max-width: 1060px;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   padding: 32px;
@@ -564,7 +564,7 @@ body {
   color: #FFFFFF;
   padding: 6px 18px;
   border-radius: 50px;
-  font-size: 0.78rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -572,7 +572,7 @@ body {
 }
 
 .question-title {
-  font-size: 1.45rem;
+  font-size: 2rem;
   font-weight: 800;
   margin-bottom: 10px;
   color: var(--navy);
@@ -581,7 +581,7 @@ body {
 .question-text {
   color: var(--text-muted);
   margin-bottom: 26px;
-  font-size: 0.97rem;
+  font-size: 1.90rem;
   line-height: 1.6;
 }
 
@@ -847,4 +847,45 @@ body {
   color: var(--orange-light);
   font-weight: 700;
   margin-bottom: 34px;
+}
+
+/* ============================================
+   CONTINUE BUTTONS
+   ============================================ */
+.continue-wrap {
+  margin-top: 10px;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.continue-wrap.hidden {
+  display: none !important;
+}
+
+.btn-continue {
+  padding: 16px 48px;
+  font-size: 1.15rem;
+  border-radius: 50px;
+  background: linear-gradient(135deg, var(--green), #27ae60);
+  box-shadow: 0 8px 24px rgba(46,204,113,0.3);
+  animation: pulseGlow 2s infinite alternate;
+}
+
+.btn-continue:hover {
+  box-shadow: 0 10px 30px rgba(46,204,113,0.5);
+}
+
+.elim-continue-wrap {
+  margin-top: 32px;
+  opacity: 0;
+  animation: fadeInUp 0.5s ease 1s forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  from { box-shadow: 0 8px 24px rgba(46,204,113,0.3); }
+  to { box-shadow: 0 8px 30px rgba(46,204,113,0.6); }
 }

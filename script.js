@@ -43,6 +43,23 @@ const screens = {
   winner: document.getElementById('screen-winner'),
 };
 
+const btnContinueGame = document.getElementById('btn-continue-game');
+const continueBtnContainer = document.getElementById('continue-btn-container');
+const btnContinueElim = document.getElementById('btn-continue-elim');
+
+// Setup Continue button event listeners
+btnContinueGame.addEventListener('click', () => {
+  continueBtnContainer.classList.add('hidden');
+  rebuildTurnQueueRemoveCurrent(false);
+  nextRound();
+});
+
+btnContinueElim.addEventListener('click', () => {
+  showScreen('game');
+  renderSidebar();
+  nextRound();
+});
+
 function showScreen(name) {
   Object.values(screens).forEach(s => s.classList.remove('active'));
   screens[name].classList.add('active');
@@ -278,6 +295,7 @@ function startGameTimer() {
 }
 
 function nextRound() {
+  continueBtnContainer.classList.add('hidden');
   // Check win condition
   if (activePool.length === 1) {
     endGame();
@@ -456,8 +474,7 @@ function resolveAnswer(isCorrect, originalIndex) {
 
   if (isCorrect) {
     playSound('snd-correct');
-    rebuildTurnQueueRemoveCurrent(false);
-    nextRound();
+    continueBtnContainer.classList.remove('hidden');
   } else {
     playSound('snd-incorrect');
     currentPlayer.lives--;
@@ -471,10 +488,10 @@ function resolveAnswer(isCorrect, originalIndex) {
         eliminatePlayer(currentPlayer);
       }, 1000); // Allow time for the heart burst animation
     } else {
-      rebuildTurnQueueRemoveCurrent(false);
+      // Show continue button after the heart animation plays
       setTimeout(() => {
-        nextRound();
-      }, 1500); // Allow time to see the lost life before next question
+        continueBtnContainer.classList.remove('hidden');
+      }, 1000);
     }
   }
 }
@@ -499,12 +516,6 @@ function eliminatePlayer(player) {
   document.getElementById('elim-avatar').src = player.avatar;
   document.getElementById('elim-name').textContent = player.name;
   showScreen('elimination');
-
-  setTimeout(() => {
-    showScreen('game');
-    renderSidebar();
-    nextRound();
-  }, 2600);
 }
 
 // ---------- SIDEBAR ----------
