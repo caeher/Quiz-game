@@ -426,7 +426,7 @@ body {
 /* Question Card */
 .question-card {
   width: 100%;
-  max-width: 750px;
+  max-width: 1050px;
   background: var(--bg-panel);
   border: 2px solid var(--orange);
   border-radius: 16px;
@@ -442,15 +442,15 @@ body {
   color: #062c3d;
   padding: 4px 16px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 1.8rem;
   font-weight: bold;
   letter-spacing: 1px;
-  margin-bottom: 14px;
+  margin-bottom: 40px;
   box-shadow: 0 0 10px var(--blue-glow);
 }
 
 .question-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 10px;
   color: var(--orange);
@@ -458,8 +458,8 @@ body {
 
 .question-text {
   color: var(--grey);
-  margin-bottom: 22px;
-  font-size: 0.95rem;
+  margin-bottom: 50px;
+  font-size: 1.95rem;
   line-height: 1.5;
 }
 
