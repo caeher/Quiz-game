@@ -101,7 +101,8 @@ btnAddParticipant.addEventListener('click', () => {
     id: nextId++,
     name: name,
     avatar: generateAvatar(selectedAvatarIndex),
-    active: true
+    active: true,
+    lives: 3
   });
   inputName.value = '';
   // cycle to next avatar for variety
@@ -249,7 +250,10 @@ function getNextPlayer() {
 function startGame() {
   // initialize active pool with all participants
   activePool = participants.map(p => p.id);
-  participants.forEach(p => p.active = true);
+  participants.forEach(p => {
+    p.active = true;
+    p.lives = 3;
+  });
   rebuildTurnQueue();
 
   stats = { answered: 0, eliminated: 0 };
@@ -297,10 +301,32 @@ function nextRound() {
   startTimer();
 }
 
+function getHeartSVG(isActive, isJustLost = false) {
+  const className = `heart-icon ${isActive ? 'active' : 'lost'} ${isJustLost ? 'just-lost' : ''}`;
+  return `<svg class="${className}" viewBox="0 0 24 24" width="24" height="24">
+    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+  </svg>`;
+}
+
+function renderLives(player, container, animateJustLost = false) {
+  container.innerHTML = '';
+  const maxLives = 3;
+  const currentLives = player.active ? (player.lives !== undefined ? player.lives : 3) : 0;
+  const justLostIndex = animateJustLost ? currentLives : -1;
+
+  for (let i = 0; i < maxLives; i++) {
+    const isActive = i < currentLives;
+    const isJustLost = i === justLostIndex;
+    const heartHtml = getHeartSVG(isActive, isJustLost);
+    container.insertAdjacentHTML('beforeend', heartHtml);
+  }
+}
+
 // ---------- SPOTLIGHT ----------
-function renderSpotlight() {
+function renderSpotlight(justLostLife = false) {
   document.getElementById('spotlight-avatar').src = currentPlayer.avatar;
   document.getElementById('spotlight-name').textContent = currentPlayer.name;
+  renderLives(currentPlayer, document.getElementById('spotlight-lives'), justLostLife);
 }
 
 // ---------- QUESTION RENDERING ----------
@@ -429,7 +455,22 @@ function resolveAnswer(isCorrect, originalIndex) {
     nextRound();
   } else {
     playSound('snd-incorrect');
-    eliminatePlayer(currentPlayer);
+    currentPlayer.lives--;
+    
+    // Animate the lost life in the spotlight
+    renderSpotlight(true);
+    renderSidebar();
+
+    if (currentPlayer.lives <= 0) {
+      setTimeout(() => {
+        eliminatePlayer(currentPlayer);
+      }, 1000); // Allow time for the heart burst animation
+    } else {
+      rebuildTurnQueueRemoveCurrent(false);
+      setTimeout(() => {
+        nextRound();
+      }, 1500); // Allow time to see the lost life before next question
+    }
   }
 }
 
@@ -480,9 +521,22 @@ function renderSidebar() {
     img.src = p.avatar;
     row.appendChild(img);
 
+    const infoContainer = document.createElement('div');
+    infoContainer.className = 'player-info';
+
     const name = document.createElement('span');
+    name.className = 'player-name-text';
     name.textContent = p.name;
-    row.appendChild(name);
+    infoContainer.appendChild(name);
+
+    if (p.active) {
+      const livesDiv = document.createElement('div');
+      livesDiv.className = 'sidebar-lives-container';
+      renderLives(p, livesDiv, false);
+      infoContainer.appendChild(livesDiv);
+    }
+
+    row.appendChild(infoContainer);
 
     if (p.active) {
       activeContainer.appendChild(row);
@@ -530,7 +584,10 @@ function endGame() {
 
 document.getElementById('btn-restart').addEventListener('click', () => {
   // reset everything for a new game
-  participants.forEach(p => p.active = true);
+  participants.forEach(p => {
+    p.active = true;
+    p.lives = 3;
+  });
   activePool = [];
   turnQueue = [];
   currentPlayer = null;

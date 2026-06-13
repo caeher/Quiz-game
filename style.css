@@ -371,6 +371,28 @@ body {
   text-decoration: line-through;
 }
 
+.player-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.player-name-text {
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.sidebar-lives-container {
+  display: flex;
+  gap: 4px;
+}
+
+.sidebar-lives-container .heart-icon {
+  width: 12px;
+  height: 12px;
+}
+
 .sidebar-stats {
   margin-top: auto;
   padding-top: 20px;
@@ -444,6 +466,55 @@ body {
   letter-spacing: 1px;
   z-index: 1;
   color: var(--text-light);
+}
+
+.spotlight-lives {
+  display: flex;
+  gap: 8px;
+  z-index: 1;
+  margin-top: 4px;
+}
+
+.spotlight-lives .heart-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.heart-icon {
+  fill: var(--red);
+  filter: drop-shadow(0 2px 4px rgba(231,76,60,0.45));
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.heart-icon.lost {
+  fill: rgba(255, 255, 255, 0.15);
+  filter: grayscale(1) drop-shadow(0 0 0 transparent);
+  transform: scale(0.8);
+}
+
+.heart-icon.just-lost {
+  animation: heartBurst 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes heartBurst {
+  0% {
+    transform: scale(1);
+    fill: var(--red);
+    filter: drop-shadow(0 2px 4px rgba(231,76,60,0.45));
+  }
+  30% {
+    transform: scale(1.4);
+    fill: #ff7675;
+    filter: drop-shadow(0 0 12px var(--red));
+  }
+  60% {
+    transform: scale(0.6);
+  }
+  100% {
+    transform: scale(0.8);
+    fill: rgba(255, 255, 255, 0.15);
+    filter: grayscale(1);
+  }
 }
 
 /* ---------- Timer ---------- */
