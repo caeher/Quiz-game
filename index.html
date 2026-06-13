@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sovereignty Challenge</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ SETUP SCREEN ============ -->
+<section id="screen-setup" class="screen active">
+  <div class="container">
+    <h1 class="event-title">⚡ THE SOVEREIGNTY CHALLENGE ⚡</h1>
+    <p class="event-subtitle">Bitcoin Trivia Showdown — Only one will achieve Sovereignty</p>
+
+    <div class="setup-grid">
+      <div class="add-participant-card">
+        <h2>Add Participant</h2>
+        <input type="text" id="input-name" placeholder="Participant name" maxlength="20">
+        <div class="avatar-picker" id="avatar-picker"></div>
+        <button id="btn-add-participant" class="btn btn-primary">Add Player</button>
+      </div>
+
+      <div class="participants-card">
+        <h2>Players <span id="player-count-badge" class="badge">0</span></h2>
+        <div id="participants-list" class="participants-list"></div>
+      </div>
+    </div>
+
+    <div class="start-bar">
+      <span id="setup-warning" class="warning"></span>
+      <button id="btn-start" class="btn btn-start">🚀 START CHALLENGE</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GAME SCREEN ============ -->
+<section id="screen-game" class="screen">
+  <div class="game-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>🟢 Active Players</h3>
+      <div id="sidebar-active" class="sidebar-list"></div>
+
+      <h3>💀 Eliminated</h3>
+      <div id="sidebar-eliminated" class="sidebar-list"></div>
+
+      <div class="sidebar-stats">
+        <h3>📊 Stats</h3>
+        <p>Questions answered: <span id="stat-answered">0</span></p>
+        <p>Eliminated: <span id="stat-eliminated">0</span></p>
+        <p>Questions left in pool: <span id="stat-pool">0</span></p>
+        <p>Game time: <span id="stat-time">00:00</span></p>
+      </div>
+    </aside>
+
+    <!-- Main play area -->
+    <main class="play-area">
+
+      <!-- Spotlight participant -->
+      <div class="spotlight">
+        <div class="spotlight-glow"></div>
+        <img id="spotlight-avatar" class="spotlight-avatar" src="" alt="">
+        <div class="spotlight-name" id="spotlight-name">Player Name</div>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-wrap">
+        <div id="timer-bar" class="timer-bar"></div>
+        <div id="timer-text" class="timer-text">30</div>
+      </div>
+
+      <!-- Question card -->
+      <div class="question-card">
+        <div class="question-category" id="question-category">Category</div>
+        <div class="question-title" id="question-title">Question title</div>
+        <div class="question-text" id="question-text">Question body text...</div>
+
+        <div class="answers-grid" id="answers-grid">
+          <!-- answer buttons injected here -->
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-label" id="progress-label">Question 1</div>
+
+    </main>
+  </div>
+
+  <!-- Time's up overlay -->
+  <div id="overlay-timeup" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>⏰ TIME IS UP!</h2>
+      <p>Did the answer count?</p>
+      <div class="overlay-actions">
+        <button id="btn-timeup-correct" class="btn btn-correct">✅ Count as Correct</button>
+        <button id="btn-timeup-incorrect" class="btn btn-incorrect">❌ Count as Incorrect</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pool exhausted overlay -->
+  <div id="overlay-poolempty" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>📭 All questions have been used</h2>
+      <p>You can reset the question bank to continue.</p>
+      <button id="btn-reset-pool" class="btn btn-primary">🔄 Reset Question Bank</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ELIMINATION SCREEN ============ -->
+<section id="screen-elimination" class="screen">
+  <div class="elimination-box">
+    <img id="elim-avatar" class="elim-avatar" src="" alt="">
+    <div class="elim-name" id="elim-name">Player</div>
+    <div class="elim-text">ELIMINATED</div>
+  </div>
+</section>
+
+<!-- ============ WINNER SCREEN ============ -->
+<section id="screen-winner" class="screen">
+  <canvas id="confetti-canvas"></canvas>
+  <div class="winner-box">
+    <h1 class="winner-title">🏆 Sovereignty Challenge Winner 🏆</h1>
+    <img id="winner-avatar" class="winner-avatar" src="" alt="">
+    <h2 id="winner-name" class="winner-name">Player Name</h2>
+    <p class="winner-congrats">Congratulations!</p>
+    <p class="winner-prize">You have won a Jade Hardware Wallet 🔐</p>
+    <button id="btn-restart" class="btn btn-primary">🔁 New Game</button>
+  </div>
+</section>
+
+<!-- Audio elements -->
+<audio id="snd-correct" src="assets/sounds/correct.mp3" preload="auto"></audio>
+<audio id="snd-incorrect" src="assets/sounds/incorrect.mp3" preload="auto"></audio>
+<audio id="snd-tick" src="assets/sounds/tick.mp3" preload="auto"></audio>
+<audio id="snd-winner" src="assets/sounds/winner.mp3" preload="auto"></audio>
+<audio id="snd-elim" src="assets/sounds/elimination.mp3" preload="auto"></audio>
+
+<script src="script.js"></script>
+</body>
+</html>

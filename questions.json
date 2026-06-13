@@ -1,0 +1,209 @@
+{
+  "bitcoinWhatIsIt": {
+    "title": "Bitcoin: What is it?",
+    "questions": {
+      "whatIsBitcoin": {
+        "question": "What exactly is Bitcoin?",
+        "title": "So what exactly is Bitcoin?",
+        "text": "Bitcoin is digital money that works without banks or governments, secured by cryptography and a global network of computers.",
+        "answers": [
+          "Digital money",
+          "A video game",
+          "A cartoon character",
+          "A type of credit card"
+        ],
+        "feedback": [
+          "Correct! Bitcoin is decentralized digital money.",
+          "Incorrect! Bitcoin is not a video game.",
+          "Nope! Bitcoin is not a cartoon character.",
+          "Incorrect! Bitcoin is not a credit card."
+        ]
+      },
+      "whoCreated": {
+        "question": "Who created Bitcoin?",
+        "title": "The mysterious creator",
+        "text": "Bitcoin was created by an anonymous person or group using the pseudonym Satoshi Nakamoto in 2008.",
+        "answers": [
+          "Satoshi Nakamoto",
+          "Elon Musk",
+          "Mark Zuckerberg",
+          "Bill Gates"
+        ],
+        "feedback": [
+          "Correct! Satoshi Nakamoto published the Bitcoin whitepaper in 2008.",
+          "Incorrect! Elon Musk did not create Bitcoin.",
+          "Nope! Mark Zuckerberg did not create Bitcoin.",
+          "Incorrect! Bill Gates did not create Bitcoin."
+        ]
+      },
+      "maxSupply": {
+        "question": "What is the maximum supply of Bitcoin?",
+        "title": "Bitcoin's hard cap",
+        "text": "Bitcoin has a fixed maximum supply of 21 million coins, making it scarce by design.",
+        "answers": [
+          "21 million",
+          "100 million",
+          "Unlimited",
+          "1 billion"
+        ],
+        "feedback": [
+          "Correct! Only 21 million bitcoin will ever exist.",
+          "Incorrect! It's not 100 million.",
+          "Nope! Bitcoin has a fixed supply, not unlimited.",
+          "Incorrect! It's not 1 billion."
+        ]
+      }
+    }
+  },
+  "bitcoinTechnology": {
+    "title": "Bitcoin Technology",
+    "questions": {
+      "whatIsBlockchain": {
+        "question": "What is the blockchain?",
+        "title": "The public ledger",
+        "text": "The blockchain is a public, distributed ledger that records every Bitcoin transaction in chronological blocks.",
+        "answers": [
+          "A public ledger of transactions",
+          "A type of wallet app",
+          "A social media platform",
+          "A mining company"
+        ],
+        "feedback": [
+          "Correct! It's the shared record of all transactions.",
+          "Incorrect! A wallet app is not the blockchain.",
+          "Nope! It's not a social media platform.",
+          "Incorrect! It's not a mining company."
+        ]
+      },
+      "whatIsMining": {
+        "question": "What is Bitcoin mining?",
+        "title": "Securing the network",
+        "text": "Mining is the process of using computing power to validate transactions and secure the network, earning new bitcoin as a reward.",
+        "answers": [
+          "Validating transactions to secure the network",
+          "Digging underground for coins",
+          "Printing physical bitcoin bills",
+          "Hacking other people's wallets"
+        ],
+        "feedback": [
+          "Correct! Miners secure the network and validate transactions.",
+          "Incorrect! There's no physical digging involved.",
+          "Nope! Bitcoin has no physical bills.",
+          "Incorrect! Mining is not hacking."
+        ]
+      },
+      "privateKey": {
+        "question": "What does a private key control?",
+        "title": "Your secret access",
+        "text": "A private key gives you control and ownership over the bitcoin associated with your wallet address.",
+        "answers": [
+          "Access to and control of your bitcoin",
+          "Your internet password",
+          "Your email account",
+          "Your phone's lock screen"
+        ],
+        "feedback": [
+          "Correct! Private keys control your bitcoin.",
+          "Incorrect! It's not your internet password.",
+          "Nope! Not related to your email account.",
+          "Incorrect! Not your phone's lock screen."
+        ]
+      }
+    }
+  },
+  "selfCustody": {
+    "title": "Self Custody & Wallets",
+    "questions": {
+      "notYourKeys": {
+        "question": "What does \"not your keys, not your coins\" mean?",
+        "title": "A core Bitcoin principle",
+        "text": "If you don't control your private keys, you don't truly own your bitcoin — you're trusting a third party.",
+        "answers": [
+          "If you don't hold your keys, you don't truly own your bitcoin",
+          "You should write your keys on social media",
+          "Exchanges always protect your coins forever",
+          "Keys don't matter for security"
+        ],
+        "feedback": [
+          "Correct! Self custody means holding your own keys.",
+          "Incorrect! Never share your keys publicly.",
+          "Nope! Exchanges can fail or be hacked.",
+          "Incorrect! Keys are central to security."
+        ]
+      },
+      "hardwareWallet": {
+        "question": "What is the main benefit of a hardware wallet?",
+        "title": "Cold storage security",
+        "text": "A hardware wallet keeps your private keys offline, protecting them from online hackers and malware.",
+        "answers": [
+          "Keeps private keys offline and secure",
+          "Lets you spend faster than cash",
+          "Connects automatically to social media",
+          "Mines bitcoin for you"
+        ],
+        "feedback": [
+          "Correct! Hardware wallets offer cold storage security.",
+          "Incorrect! Speed isn't the main benefit.",
+          "Nope! It doesn't connect to social media.",
+          "Incorrect! Hardware wallets don't mine."
+        ]
+      },
+      "seedPhrase": {
+        "question": "What should you do with your seed phrase?",
+        "title": "Protecting your backup",
+        "text": "Your seed phrase is the master backup to your wallet and should be kept offline, private, and secure.",
+        "answers": [
+          "Keep it offline and private, never share it",
+          "Post it online for backup",
+          "Email it to a friend",
+          "Share it with customer support"
+        ],
+        "feedback": [
+          "Correct! Never share your seed phrase with anyone.",
+          "Incorrect! Posting it online is extremely dangerous.",
+          "Nope! Never email your seed phrase.",
+          "Incorrect! Real support never asks for seed phrases."
+        ]
+      }
+    }
+  },
+  "bitcoinEconomics": {
+    "title": "Bitcoin Economics",
+    "questions": {
+      "halving": {
+        "question": "What happens during a Bitcoin halving?",
+        "title": "Cutting the issuance",
+        "text": "Approximately every four years, the reward miners receive for new blocks is cut in half, slowing the issuance of new bitcoin.",
+        "answers": [
+          "The mining reward is cut in half",
+          "The price doubles instantly",
+          "Bitcoin's supply doubles",
+          "Transactions become free forever"
+        ],
+        "feedback": [
+          "Correct! Block rewards halve roughly every 4 years.",
+          "Incorrect! Price isn't guaranteed to change instantly.",
+          "Nope! Supply does not double.",
+          "Incorrect! Transactions aren't free forever."
+        ]
+      },
+      "inflation": {
+        "question": "Why is Bitcoin often called \"digital gold\"?",
+        "title": "A scarce store of value",
+        "text": "Like gold, Bitcoin is scarce, durable, and not controlled by any government, making it attractive as a store of value.",
+        "answers": [
+          "It's scarce and acts as a store of value like gold",
+          "It's made of real gold",
+          "It's only used for jewelry",
+          "Governments print it like cash"
+        ],
+        "feedback": [
+          "Correct! Scarcity makes Bitcoin similar to gold.",
+          "Incorrect! Bitcoin is purely digital, no physical gold.",
+          "Nope! Bitcoin isn't jewelry.",
+          "Incorrect! No government prints bitcoin."
+        ]
+      }
+    }
+  }
+}
