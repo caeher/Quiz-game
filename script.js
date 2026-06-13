@@ -289,11 +289,16 @@ function nextRound() {
     return;
   }
 
+  if (questionPool.length === 0) {
+    showPoolEmptyOverlay();
+    return;
+  }
+
   currentPlayer = getNextPlayer();
   if (!currentPlayer) { rebuildTurnQueue(); currentPlayer = getNextPlayer(); }
 
   currentQuestion = getNextQuestion();
-  if (!currentQuestion) return; // overlay shown, wait for reset
+  if (!currentQuestion) return; // double check guard
 
   renderSpotlight();
   renderQuestion();
@@ -556,12 +561,7 @@ function hidePoolEmptyOverlay() {
 }
 document.getElementById('btn-reset-pool').addEventListener('click', () => {
   resetQuestionPool();
-  // try again to start next round
-  currentQuestion = getNextQuestion();
-  if (currentQuestion) {
-    renderQuestion();
-    startTimer();
-  }
+  nextRound();
 });
 
 // ============================================
