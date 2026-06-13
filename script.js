@@ -425,17 +425,21 @@ function updateTimerUI() {
 
 function onTimeUp() {
   enableAnswerButtons(false);
-  document.getElementById('overlay-timeup').classList.remove('hidden');
-}
+  //playSound('snd-incorrect');
 
-document.getElementById('btn-timeup-correct').addEventListener('click', () => {
-  document.getElementById('overlay-timeup').classList.add('hidden');
-  resolveAnswer(true, null);
-});
-document.getElementById('btn-timeup-incorrect').addEventListener('click', () => {
-  document.getElementById('overlay-timeup').classList.add('hidden');
-  resolveAnswer(false, null);
-});
+  // Highlight correct answer
+  document.querySelectorAll('.answer-btn').forEach(b => {
+    if (parseInt(b.dataset.originalIndex) === 0) b.classList.add('correct-flash');
+  });
+
+  // Display feedback text
+  const fb = document.createElement('div');
+  fb.className = 'feedback-text incorrect';
+  fb.textContent = '⏰ ¡Tiempo agotado! La respuesta se cuenta como incorrecta.';
+  document.querySelector('.question-card').appendChild(fb);
+
+  setTimeout(() => resolveAnswer(false, null), 1400);
+}
 
 function enableAnswerButtons(enabled) {
   document.querySelectorAll('.answer-btn').forEach(b => b.disabled = !enabled);
