@@ -358,7 +358,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 
 function renderQuestion() {
   document.getElementById('question-category').textContent = currentQuestion.category;
-  document.getElementById('question-title').textContent = currentQuestion.title || currentQuestion.question;
+  document.getElementById('question-title').textContent = currentQuestion.question || currentQuestion.title;
   document.getElementById('question-text').textContent = currentQuestion.text || '';
 
   // Build shuffled answer order, but keep mapping to original index
