@@ -462,8 +462,9 @@ function handleAnswer(originalIndex, btnEl) {
   fb.textContent = feedback;
   document.querySelector('.question-card').appendChild(fb);
 
-  // If incorrect, also highlight the correct answer
+  // If incorrect, play sound immediately and highlight the correct answer
   if (!isCorrect) {
+    playSound('snd-incorrect');
     document.querySelectorAll('.answer-btn').forEach(b => {
       if (parseInt(b.dataset.originalIndex) === 0) b.classList.add('correct-flash');
     });
@@ -480,7 +481,6 @@ function resolveAnswer(isCorrect, originalIndex) {
     playSound('snd-correct');
     continueBtnContainer.classList.remove('hidden');
   } else {
-    playSound('snd-incorrect');
     currentPlayer.lives--;
     
     // Animate the lost life in the spotlight
