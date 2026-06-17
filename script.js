@@ -13,8 +13,8 @@ let usedQuestions = [];
 let currentQuestion = null;
 
 let timerInterval = null;
-let timeLeft = 50;
-const TIME_LIMIT = 50;
+let timeLeft = 90;
+const TIME_LIMIT = 90;
 
 let gameStartTime = null;
 let gameTimerInterval = null;

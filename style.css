@@ -319,6 +319,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 250px;
 }
 
 .sidebar h3 {
@@ -548,7 +549,7 @@ body {
 /* ---------- Question Card ---------- */
 .question-card {
   width: 100%;
-  max-width: 1060px;
+  max-width: calc(100% - 250px);
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   padding: 32px;
@@ -583,6 +584,8 @@ body {
   margin-bottom: 26px;
   font-size: 1.90rem;
   line-height: 1.6;
+  max-height: 240px;
+  overflow-y: auto;
 }
 
 .answers-grid {
