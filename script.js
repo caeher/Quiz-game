@@ -87,7 +87,6 @@ const btnContinueElim = document.getElementById('btn-continue-elim');
 // Setup Continue button event listeners
 btnContinueGame.addEventListener('click', () => {
   continueBtnContainer.classList.add('hidden');
-  rebuildTurnQueueRemoveCurrent(false);
   nextRound();
 });
 
@@ -352,6 +351,22 @@ function nextRound() {
     return;
   }
 
+  // Always ensure the current player is removed from the queue before picking
+  // the next one, regardless of whether they answered correctly or incorrectly.
+  if (currentPlayer) {
+    turnQueue = turnQueue.filter(id => id !== currentPlayer.id);
+  }
+
+  // If the queue is empty after removing current player, rebuild it (new round
+  // of turns) but still exclude the player who just went so they go last.
+  if (turnQueue.length === 0) {
+    rebuildTurnQueue();
+    // Remove the just-played player again — they were just re-added by rebuild
+    if (currentPlayer) {
+      turnQueue = turnQueue.filter(id => id !== currentPlayer.id);
+    }
+  }
+
   currentPlayer = getNextPlayer();
   if (!currentPlayer) { rebuildTurnQueue(); currentPlayer = getNextPlayer(); }
 
@@ -401,7 +416,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 function renderQuestion() {
   document.getElementById('question-category').textContent = currentQuestion.category;
   document.getElementById('question-title').textContent = currentQuestion.question || currentQuestion.title;
-  document.getElementById('question-text').textContent = currentQuestion.text || '';
+  //document.getElementById('question-text').textContent = currentQuestion.text || '';
 
   // Build shuffled answer order, but keep mapping to original index
   // (original index 0 is always the correct answer per data convention)
@@ -466,7 +481,7 @@ function openWildcardModal() {
   clearInterval(timerInterval);
 
   // Populate modal content
-  const questionText = currentQuestion.question || currentQuestion.title || '';
+  const questionText = currentQuestion.text || '';
   document.getElementById('wildcard-question-text').textContent = questionText;
 
   // Show modal
@@ -599,12 +614,6 @@ function resolveAnswer(isCorrect, originalIndex) {
       }, 1000);
     }
   }
-}
-
-// remove current player's id from the queue (used after a correct answer so they
-// aren't picked again until the queue cycles, maintaining "no repeat in round" fairness)
-function rebuildTurnQueueRemoveCurrent(eliminate) {
-  turnQueue = turnQueue.filter(id => id !== currentPlayer.id);
 }
 
 // ---------- ELIMINATION ----------
