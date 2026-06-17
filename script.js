@@ -21,6 +21,43 @@ let gameTimerInterval = null;
 
 let stats = { answered: 0, eliminated: 0 };
 
+// ---------- WILDCARD SYSTEM ----------
+// Easily extensible: add more wildcard types here in the future
+const WILDCARD_TYPES = {
+  question_context: {
+    id: 'question_context',
+    label: 'Comodín',
+    icon: '🃏',
+    description: 'Muestra el texto completo de la pregunta'
+  }
+  // Future wildcards can be added here:
+  // fifty_fifty: { id: 'fifty_fifty', label: '50/50', icon: '✂️', description: 'Elimina dos respuestas incorrectas' },
+};
+
+// Per-player wildcard usage state: { playerId: { wildcardId: boolean } }
+let playerWildcardUsed = {};
+
+function initPlayerWildcards(playerId) {
+  playerWildcardUsed[playerId] = {};
+  Object.keys(WILDCARD_TYPES).forEach(key => {
+    playerWildcardUsed[playerId][key] = false;
+  });
+}
+
+function hasWildcardAvailable(playerId, wildcardId) {
+  return playerWildcardUsed[playerId] &&
+         playerWildcardUsed[playerId][wildcardId] === false;
+}
+
+function markWildcardUsed(playerId, wildcardId) {
+  if (playerWildcardUsed[playerId]) {
+    playerWildcardUsed[playerId][wildcardId] = true;
+  }
+}
+
+// Track if the current question's wildcard modal was already shown this round
+let wildcardShownThisRound = false;
+
 // Generated avatar set (SVG data URIs, bitcoin-themed colors)
 const AVATAR_COLORS = ['#F7931A','#2DB7F5','#9B59B6','#2ecc71','#e74c3c','#f1c40f','#1abc9c','#e67e22','#3498db','#fd79a8'];
 const AVATAR_EMOJIS = ['🧑','👩','👨','🧔','👱','👩‍🦰','👨‍🦱','🧑‍🦳','👩‍🦳','🧓'];
@@ -121,6 +158,8 @@ btnAddParticipant.addEventListener('click', () => {
     active: true,
     lives: 3
   });
+  const newId = participants[participants.length - 1].id;
+  initPlayerWildcards(newId);
   inputName.value = '';
   // cycle to next avatar for variety
   selectedAvatarIndex = (selectedAvatarIndex + 1) % AVATAR_COLORS.length;
@@ -270,6 +309,7 @@ function startGame() {
   participants.forEach(p => {
     p.active = true;
     p.lives = 3;
+    initPlayerWildcards(p.id); // reset wildcards for each player
   });
   rebuildTurnQueue();
 
@@ -318,9 +358,11 @@ function nextRound() {
   currentQuestion = getNextQuestion();
   if (!currentQuestion) return; // double check guard
 
+  wildcardShownThisRound = false; // reset for new round
   renderSpotlight();
   renderQuestion();
   renderSidebar();
+  updateWildcardButton();
   startTimer();
 }
 
@@ -395,6 +437,65 @@ function renderQuestion() {
   document.getElementById('progress-bar').style.width =
     total > 0 ? `${(usedQuestions.length / total) * 100}%` : '0%';
 }
+
+// ---------- WILDCARD LOGIC ----------
+
+function updateWildcardButton() {
+  const btn = document.getElementById('btn-wildcard');
+  if (!btn || !currentPlayer) return;
+
+  const available = hasWildcardAvailable(currentPlayer.id, 'question_context') &&
+                    !wildcardShownThisRound;
+
+  btn.disabled = !available;
+  btn.title = available
+    ? 'Usar comodín: ver el texto completo de la pregunta'
+    : 'Comodín ya utilizado';
+}
+
+function openWildcardModal() {
+  if (!currentPlayer || !currentQuestion) return;
+  if (!hasWildcardAvailable(currentPlayer.id, 'question_context')) return;
+  if (wildcardShownThisRound) return;
+
+  // Mark wildcard as used
+  markWildcardUsed(currentPlayer.id, 'question_context');
+  wildcardShownThisRound = true;
+
+  // Pause the timer
+  clearInterval(timerInterval);
+
+  // Populate modal content
+  const questionText = currentQuestion.question || currentQuestion.title || '';
+  document.getElementById('wildcard-question-text').textContent = questionText;
+
+  // Show modal
+  document.getElementById('overlay-wildcard').classList.remove('hidden');
+
+  // Disable wildcard button immediately
+  updateWildcardButton();
+}
+
+function closeWildcardModal() {
+  document.getElementById('overlay-wildcard').classList.add('hidden');
+
+  // Resume timer from where it left off
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 5 && timeLeft > 0) playSound('snd-tick');
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      onTimeUp();
+    }
+  }, 1000);
+}
+
+// Wildcard button click
+document.getElementById('btn-wildcard').addEventListener('click', openWildcardModal);
+
+// Close wildcard modal
+document.getElementById('btn-close-wildcard').addEventListener('click', closeWildcardModal);
 
 // ---------- TIMER ----------
 const timerBar = document.getElementById('timer-bar');
@@ -602,6 +703,7 @@ document.getElementById('btn-restart').addEventListener('click', () => {
   participants.forEach(p => {
     p.active = true;
     p.lives = 3;
+    initPlayerWildcards(p.id);
   });
   activePool = [];
   turnQueue = [];

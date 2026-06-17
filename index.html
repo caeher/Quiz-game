@@ -67,6 +67,14 @@
         <div class="spotlight-lives" id="spotlight-lives"></div>
       </div>
 
+      <!-- Wildcard Button (top-right) -->
+      <div id="wildcard-container" class="wildcard-container">
+        <button id="btn-wildcard" class="btn-wildcard" title="Usar comodín: ver el contexto de la pregunta">
+          <span class="wildcard-icon">🃏</span>
+          <span class="wildcard-label">Comodín</span>
+        </button>
+      </div>
+
       <!-- Timer -->
       <div class="timer-wrap">
         <div id="timer-bar" class="timer-bar"></div>
@@ -97,6 +105,20 @@
   </div>
 
 
+
+  <!-- Wildcard Modal Overlay -->
+  <div id="overlay-wildcard" class="overlay hidden">
+    <div class="overlay-box wildcard-modal">
+      <div class="wildcard-modal-header">
+        <span class="wildcard-modal-icon">🃏</span>
+        <h2>Comodín — Contexto de la Pregunta</h2>
+      </div>
+      <div class="wildcard-modal-body">
+        <p id="wildcard-question-text"></p>
+      </div>
+      <button id="btn-close-wildcard" class="btn btn-primary">Cerrar y Continuar ▶</button>
+    </div>
+  </div>
 
   <!-- Pool exhausted overlay -->
   <div id="overlay-poolempty" class="overlay hidden">
