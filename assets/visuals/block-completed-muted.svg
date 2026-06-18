@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136">
+  <defs>
+    <linearGradient id="front" x1="126" y1="22" x2="30" y2="126" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6E403C"/>
+      <stop offset="0.55" stop-color="#493244"/>
+      <stop offset="1" stop-color="#17233E"/>
+    </linearGradient>
+    <linearGradient id="top" x1="124" y1="12" x2="12" y2="24" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C47748"/>
+      <stop offset="1" stop-color="#A65A4F"/>
+    </linearGradient>
+    <linearGradient id="side" x1="30" y1="20" x2="12" y2="118" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6C332C"/>
+      <stop offset="1" stop-color="#211727"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.36" cy="0.2" r="0.85">
+      <stop stop-color="#F59A23" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#F59A23" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path d="M126 28L108 12H12L30 28Z" fill="url(#top)"/>
+  <path d="M30 28L12 12V100L30 118Z" fill="url(#side)"/>
+  <rect x="30" y="28" width="96" height="90" rx="8" fill="url(#front)"/>
+  <rect x="30" y="28" width="96" height="90" rx="8" fill="url(#glow)"/>
+  <path d="M38 36H118V110H38Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.03"/>
+  <path d="M126 28L108 12H12L30 28V118H126Z" fill="none" stroke="#8EA6FF" stroke-opacity="0.24"/>
+  <path d="M30 28L12 12" stroke="#FFFFFF" stroke-opacity="0.16"/>
+</svg>
