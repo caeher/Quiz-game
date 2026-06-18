@@ -5,7 +5,7 @@
 // ---------- STATE ----------
 let participants = [];      // {id, name, avatar, active}
 let activePool = [];        // ids not yet eliminated
-let turnQueue = [];         // shuffled queue for fair selection
+let turnQueue = [];         // fixed player order, based on creation sequence
 let currentPlayer = null;
 
 let questionPool = [];      // flattened list of question objects
@@ -20,6 +20,12 @@ let gameStartTime = null;
 let gameTimerInterval = null;
 
 let stats = { answered: 0, eliminated: 0 };
+
+let pendingBlocks = [];
+let activeBlock = null;
+let completedBlocks = [];
+let railBlockSeq = 1;
+let railRoundCounter = 1;
 
 // ---------- WILDCARD SYSTEM ----------
 // Easily extensible: add more wildcard types here in the future
@@ -282,12 +288,16 @@ function updateStatPool() {
 }
 
 // ============================================
-// FAIR PLAYER SELECTION (no repeat within round)
+// FIXED PLAYER SELECTION (creation order, no repeat within round)
 // ============================================
 
 function rebuildTurnQueue() {
-  // shuffled list of currently active player ids
-  turnQueue = shuffleArray(activePool.slice());
+  const orderedActiveIds = participants
+    .filter(player => player.active && activePool.includes(player.id))
+    .map(player => player.id);
+
+  // getNextPlayer consumes with pop(), so store the fixed order reversed.
+  turnQueue = orderedActiveIds.reverse();
 }
 
 function getNextPlayer() {
@@ -296,6 +306,70 @@ function getNextPlayer() {
   }
   const id = turnQueue.pop();
   return participants.find(p => p.id === id);
+}
+
+function createTurnBlock(player, status = 'pending') {
+  return {
+    id: `block-${player.id}-${railRoundCounter}-${railBlockSeq++}`,
+    playerId: player.id,
+    playerName: player.name,
+    avatar: player.avatar,
+    livesAtStart: player.lives !== undefined ? player.lives : 3,
+    livesAfter: null,
+    status,
+    answerResult: null,
+    round: railRoundCounter,
+    createdAt: Date.now(),
+    completedAt: null
+  };
+}
+
+function initializeTurnChain() {
+  completedBlocks = [];
+  activeBlock = null;
+  railBlockSeq = 1;
+  railRoundCounter = 1;
+
+  const initialQueueIds = turnQueue.length ? turnQueue.slice().reverse() : activePool.slice();
+  pendingBlocks = initialQueueIds
+    .map(id => participants.find(p => p.id === id))
+    .filter(Boolean)
+    .map(player => createTurnBlock(player, 'pending'));
+}
+
+function activateNextBlock() {
+  while (pendingBlocks.length > 0) {
+    const block = pendingBlocks.shift();
+    const player = participants.find(p => p.id === block.playerId);
+    if (player && player.active && activePool.includes(player.id) && player.lives > 0) {
+      block.status = 'active';
+      block.livesAtStart = player.lives;
+      activeBlock = block;
+      currentPlayer = player;
+      return player;
+    }
+  }
+
+  activeBlock = null;
+  currentPlayer = null;
+  return null;
+}
+
+function queueNextPendingBlock(player) {
+  if (!player || !player.active || player.lives <= 0) return;
+  railRoundCounter++;
+  pendingBlocks.push(createTurnBlock(player, 'pending'));
+}
+
+function completeActiveBlock(isCorrect, player, statusOverride = null) {
+  if (!activeBlock || !player) return;
+
+  activeBlock.status = statusOverride || (isCorrect ? 'completed-correct' : 'completed-wrong');
+  activeBlock.answerResult = isCorrect ? 'correct' : 'wrong';
+  activeBlock.livesAfter = player.lives;
+  activeBlock.completedAt = Date.now();
+  completedBlocks.unshift({ ...activeBlock });
+  activeBlock = null;
 }
 
 // ============================================
@@ -311,6 +385,7 @@ function startGame() {
     initPlayerWildcards(p.id); // reset wildcards for each player
   });
   rebuildTurnQueue();
+  initializeTurnChain();
 
   stats = { answered: 0, eliminated: 0 };
   gameStartTime = Date.now();
@@ -351,24 +426,13 @@ function nextRound() {
     return;
   }
 
-  // Always ensure the current player is removed from the queue before picking
-  // the next one, regardless of whether they answered correctly or incorrectly.
-  if (currentPlayer) {
-    turnQueue = turnQueue.filter(id => id !== currentPlayer.id);
+  if (!activeBlock || activeBlock.status !== 'active') {
+    activateNextBlock();
   }
-
-  // If the queue is empty after removing current player, rebuild it (new round
-  // of turns) but still exclude the player who just went so they go last.
-  if (turnQueue.length === 0) {
-    rebuildTurnQueue();
-    // Remove the just-played player again — they were just re-added by rebuild
-    if (currentPlayer) {
-      turnQueue = turnQueue.filter(id => id !== currentPlayer.id);
-    }
+  if (!currentPlayer) {
+    endGame();
+    return;
   }
-
-  currentPlayer = getNextPlayer();
-  if (!currentPlayer) { rebuildTurnQueue(); currentPlayer = getNextPlayer(); }
 
   currentQuestion = getNextQuestion();
   if (!currentQuestion) return; // double check guard
@@ -594,20 +658,31 @@ function resolveAnswer(isCorrect, originalIndex) {
   document.getElementById('stat-answered').textContent = stats.answered;
 
   if (isCorrect) {
+    completeActiveBlock(true, currentPlayer);
+    queueNextPendingBlock(currentPlayer);
+    activateNextBlock();
+    renderSidebar();
     playSound('snd-correct');
     continueBtnContainer.classList.remove('hidden');
   } else {
+    const answeredPlayer = currentPlayer;
     currentPlayer.lives--;
     
     // Animate the lost life in the spotlight
     renderSpotlight(true);
-    renderSidebar();
 
-    if (currentPlayer.lives <= 0) {
+    if (answeredPlayer.lives <= 0) {
+      completeActiveBlock(false, answeredPlayer, 'eliminated');
+      activateNextBlock();
+      renderSidebar();
       setTimeout(() => {
-        eliminatePlayer(currentPlayer);
+        eliminatePlayer(answeredPlayer);
       }, 1000); // Allow time for the heart burst animation
     } else {
+      completeActiveBlock(false, answeredPlayer);
+      queueNextPendingBlock(answeredPlayer);
+      activateNextBlock();
+      renderSidebar();
       // Show continue button after the heart animation plays
       setTimeout(() => {
         continueBtnContainer.classList.remove('hidden');
@@ -633,22 +708,97 @@ function eliminatePlayer(player) {
 }
 
 // ---------- SIDEBAR ----------
+function animateRailDisplacement(container, previousRects) {
+  if (!previousRects || previousRects.size === 0) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const blocks = Array.from(container.querySelectorAll('.sidebar-player'));
+  blocks.forEach(block => {
+    if (typeof block.animate !== 'function') return;
+
+    const currentRect = block.getBoundingClientRect();
+    const previousRect = previousRects.get(block.dataset.blockId);
+    let deltaX = 0;
+    let deltaY = 0;
+
+    if (previousRect) {
+      deltaX = previousRect.left - currentRect.left;
+      deltaY = previousRect.top - currentRect.top;
+    } else if (block.classList.contains('block-pending')) {
+      return;
+    } else if (block.classList.contains('block-completed-correct') ||
+               block.classList.contains('block-completed-wrong') ||
+               block.classList.contains('block-eliminated')) {
+      deltaX = 86;
+    }
+
+    if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+
+    const baseLift = block.classList.contains('current') ? -8 : 0;
+    block.animate([
+      {
+        opacity: previousRect ? 1 : 0,
+        transform: `translate3d(${deltaX}px, ${deltaY}px, 0) translateY(${baseLift}px) scale(0.92) rotateZ(${deltaX > 0 ? -1.8 : 1.8}deg)`
+      },
+      {
+        opacity: 1,
+        offset: 0.72,
+        transform: `translate3d(${-deltaX * 0.04}px, ${-deltaY * 0.04}px, 0) translateY(${baseLift}px) scale(1.035) rotateZ(${deltaX > 0 ? 0.45 : -0.45}deg)`
+      },
+      {
+        opacity: 1,
+        transform: `translate3d(0, 0, 0) translateY(${baseLift}px) scale(1) rotateZ(0deg)`
+      }
+    ], {
+      duration: 920,
+      easing: 'ease-in-out'
+    });
+  });
+}
+
 function renderSidebar() {
   const activeContainer = document.getElementById('sidebar-active');
   const elimContainer = document.getElementById('sidebar-eliminated');
+  const previousRects = new Map(
+    Array.from(activeContainer.querySelectorAll('.sidebar-player')).map(block => [
+      block.dataset.blockId,
+      block.getBoundingClientRect()
+    ])
+  );
 
   activeContainer.innerHTML = '';
   elimContainer.innerHTML = '';
+  activeContainer.classList.add('rail-chain');
 
-  participants.forEach(p => {
+  const blockWidth = window.innerWidth <= 900 ? 184 : 232;
+  const blockGap = window.innerWidth <= 900 ? 26 : 36;
+  const activeIndex = pendingBlocks.length;
+  const centerOffset = -((activeIndex * (blockWidth + blockGap)) + (blockWidth / 2));
+  activeContainer.style.setProperty('transform', `translateX(${centerOffset}px)`, 'important');
+
+  // The FIFO head is rendered closest to the active block/divider.
+  // The DOM runs left-to-right, so reverse only the visual presentation.
+  const orderedPendingBlocks = pendingBlocks.slice().reverse();
+
+  const railBlocks = [
+    ...orderedPendingBlocks,
+    ...(activeBlock ? [activeBlock] : []),
+    ...completedBlocks
+  ];
+
+  function renderBlock(block) {
+    const player = participants.find(p => p.id === block.playerId);
     const row = document.createElement('div');
-    row.className = 'sidebar-player';
-    if (currentPlayer && p.id === currentPlayer.id && p.active) {
-      row.classList.add('current');
-    }
+    row.className = `sidebar-player block-${block.status}`;
+    row.dataset.blockId = block.id;
+    row.dataset.playerId = block.playerId;
+
+    if (block.status === 'active') row.classList.add('current');
+    if (block.status === 'eliminated') row.classList.add('eliminated-item');
 
     const img = document.createElement('img');
-    img.src = p.avatar;
+    img.src = block.avatar;
+    img.alt = '';
     row.appendChild(img);
 
     const infoContainer = document.createElement('div');
@@ -656,22 +806,61 @@ function renderSidebar() {
 
     const name = document.createElement('span');
     name.className = 'player-name-text';
-    name.textContent = p.name;
+    name.textContent = block.playerName;
+    name.title = block.playerName;
     infoContainer.appendChild(name);
 
-    if (p.active) {
-      const livesDiv = document.createElement('div');
-      livesDiv.className = 'sidebar-lives-container';
-      renderLives(p, livesDiv, false);
-      infoContainer.appendChild(livesDiv);
-    }
+    const livesDiv = document.createElement('div');
+    livesDiv.className = 'sidebar-lives-container';
+    const livesSnapshot = {
+      ...(player || {}),
+      active: block.status !== 'eliminated',
+      lives: block.livesAfter !== null ? block.livesAfter : block.livesAtStart
+    };
+    renderLives(livesSnapshot, livesDiv, false);
+    infoContainer.appendChild(livesDiv);
 
     row.appendChild(infoContainer);
 
-    if (p.active) {
-      activeContainer.appendChild(row);
-    } else {
+    const statusIcon = document.createElement('span');
+    statusIcon.className = 'rail-status-icon';
+    row.appendChild(statusIcon);
+
+    return row;
+  }
+
+  railBlocks.forEach(block => {
+    activeContainer.appendChild(renderBlock(block));
+  });
+  animateRailDisplacement(activeContainer, previousRects);
+
+  participants.forEach(p => {
+    if (!p.active) {
+      const row = document.createElement('div');
+      row.className = 'sidebar-player block-eliminated eliminated-item';
       row.classList.add('eliminated-item');
+      row.dataset.playerId = p.id;
+
+      const img = document.createElement('img');
+      img.src = p.avatar;
+      img.alt = '';
+      row.appendChild(img);
+
+      const infoContainer = document.createElement('div');
+      infoContainer.className = 'player-info';
+
+      const name = document.createElement('span');
+      name.className = 'player-name-text';
+      name.textContent = p.name;
+      name.title = p.name;
+      infoContainer.appendChild(name);
+
+      const livesDiv = document.createElement('div');
+      livesDiv.className = 'sidebar-lives-container';
+      renderLives({ ...p, active: false, lives: 0 }, livesDiv, false);
+      infoContainer.appendChild(livesDiv);
+
+      row.appendChild(infoContainer);
       elimContainer.appendChild(row);
     }
   });
@@ -718,6 +907,11 @@ document.getElementById('btn-restart').addEventListener('click', () => {
   turnQueue = [];
   currentPlayer = null;
   currentQuestion = null;
+  pendingBlocks = [];
+  activeBlock = null;
+  completedBlocks = [];
+  railBlockSeq = 1;
+  railRoundCounter = 1;
   questionPool = [];
   usedQuestions = [];
   stats = { answered: 0, eliminated: 0 };
