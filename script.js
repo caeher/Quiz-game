@@ -66,6 +66,8 @@ function markWildcardUsed(playerId, wildcardId) {
 
 // Track if the current question's wildcard modal was already shown this round
 let wildcardShownThisRound = false;
+let wildcardCountdownInterval = null;
+const WILDCARD_MAX_SECONDS = 60;
 
 // Generated avatar set (SVG data URIs, bitcoin-themed colors)
 const AVATAR_COLORS = ['#F7931A','#2DB7F5','#9B59B6','#2ecc71','#e74c3c','#f1c40f','#1abc9c','#e67e22','#3498db','#fd79a8'];
@@ -552,7 +554,7 @@ function openWildcardModal() {
   markWildcardUsed(currentPlayer.id, 'question_context');
   wildcardShownThisRound = true;
 
-  // Pause the timer
+  // Pause the main question timer
   clearInterval(timerInterval);
 
   // Populate modal content
@@ -564,12 +566,71 @@ function openWildcardModal() {
 
   // Disable wildcard button immediately
   updateWildcardButton();
+
+  // Start wildcard auto-close countdown
+  startWildcardCountdown();
+}
+
+function startWildcardCountdown() {
+  clearInterval(wildcardCountdownInterval);
+
+  let secondsLeft = WILDCARD_MAX_SECONDS;
+  const circumference = 2 * Math.PI * 18; // r=18
+  const ring = document.getElementById('wildcard-ring-progress');
+  const txt = document.getElementById('wildcard-countdown-text');
+
+  function updateWildcardCountdownUI() {
+    if (!ring || !txt) return;
+    const pct = secondsLeft / WILDCARD_MAX_SECONDS;
+    ring.style.strokeDashoffset = circumference * (1 - pct);
+    txt.textContent = secondsLeft;
+    if (secondsLeft > 30) {
+      ring.style.stroke = '#2ecc71';
+      txt.style.color = '#2ecc71';
+    } else if (secondsLeft > 10) {
+      ring.style.stroke = '#f1c40f';
+      txt.style.color = '#f1c40f';
+    } else {
+      ring.style.stroke = '#e74c3c';
+      txt.style.color = '#e74c3c';
+    }
+  }
+
+  if (ring) {
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = 0;
+  }
+  updateWildcardCountdownUI();
+
+  wildcardCountdownInterval = setInterval(() => {
+    secondsLeft--;
+    updateWildcardCountdownUI();
+    if (secondsLeft <= 0) {
+      clearInterval(wildcardCountdownInterval);
+      closeWildcardModal();
+    }
+  }, 1000);
 }
 
 function closeWildcardModal() {
+  clearInterval(wildcardCountdownInterval);
   document.getElementById('overlay-wildcard').classList.add('hidden');
 
-  // Resume timer from where it left off
+  // Reset ring visuals for next time
+  const circumference = 2 * Math.PI * 18;
+  const ring = document.getElementById('wildcard-ring-progress');
+  const txt = document.getElementById('wildcard-countdown-text');
+  if (ring) {
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = 0;
+    ring.style.stroke = '#2ecc71';
+  }
+  if (txt) {
+    txt.textContent = WILDCARD_MAX_SECONDS;
+    txt.style.color = '#2ecc71';
+  }
+
+  // Resume question timer from where it left off
   timerInterval = setInterval(() => {
     timeLeft--;
     updateTimerUI();

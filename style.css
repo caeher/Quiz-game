@@ -3131,3 +3131,57 @@ body {
   color: #fff;
   font-size: 1rem;
 }
+
+/* ============================================
+   WILDCARD MODAL COUNTDOWN RING
+   ============================================ */
+
+.wildcard-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.wildcard-countdown-wrap {
+  margin-left: auto;
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.wildcard-countdown-ring {
+  transform: rotate(-90deg);
+  display: block;
+}
+
+.wildcard-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 3.5;
+}
+
+.wildcard-ring-progress {
+  fill: none;
+  stroke: #2ecc71;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 113.1; /* 2*pi*18 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.9s linear, stroke 0.4s ease;
+}
+
+.wildcard-countdown-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #2ecc71;
+  line-height: 1;
+  transition: color 0.4s ease;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
