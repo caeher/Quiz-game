@@ -21,6 +21,12 @@
         <input type="text" id="input-name" placeholder="Participant name" maxlength="20">
         <div class="avatar-picker" id="avatar-picker"></div>
         <button id="btn-add-participant" class="btn btn-primary">Add Player</button>
+
+        <div class="time-limit-row">
+          <label for="input-time-limit">⏱ Tiempo por pregunta (segundos)</label>
+          <input type="number" id="input-time-limit" value="90" min="10" max="300" step="5">
+          <span class="time-hint">-15% cada ronda</span>
+        </div>
       </div>
 
       <div class="participants-card">

@@ -3038,3 +3038,96 @@ body {
     display: none;
   }
 }
+
+/* ============================================
+   TIME LIMIT SETUP ROW
+   ============================================ */
+
+.time-limit-row {
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: rgba(247, 147, 26, 0.08);
+  border: 1px solid rgba(247, 147, 26, 0.25);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.time-limit-row label {
+  font-size: 0.85rem;
+  color: var(--text-muted, #aaa);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.time-limit-row input[type="number"] {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--input-bg, #1a1a2e);
+  border: 1px solid rgba(247, 147, 26, 0.4);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+
+.time-limit-row input[type="number"]::-webkit-inner-spin-button,
+.time-limit-row input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+.time-limit-row input[type="number"]:focus {
+  border-color: #F7931A;
+  box-shadow: 0 0 0 2px rgba(247, 147, 26, 0.2);
+}
+
+.time-hint {
+  font-size: 0.75rem;
+  color: #F7931A;
+  opacity: 0.8;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ============================================
+   ROUND TIMER BADGE (in-game notification)
+   ============================================ */
+
+.round-timer-badge {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(247, 147, 26, 0.95), rgba(200, 100, 0, 0.95));
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(247, 147, 26, 0.4);
+  z-index: 100;
+  pointer-events: none;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(255,255,255,0.15);
+  opacity: 1;
+  transition: opacity 0.7s ease;
+  white-space: nowrap;
+}
+
+.round-timer-badge.hidden {
+  display: none;
+}
+
+.round-timer-badge.fade-out {
+  opacity: 0;
+}
+
+.round-timer-badge strong {
+  color: #fff;
+  font-size: 1rem;
+}

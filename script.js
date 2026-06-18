@@ -14,7 +14,10 @@ let currentQuestion = null;
 
 let timerInterval = null;
 let timeLeft = 90;
-const TIME_LIMIT = 90;
+let BASE_TIME_LIMIT = 90;   // set from setup screen
+let currentTimeLimit = 90;  // decreases 15% each full round
+let completedRoundCount = 0; // how many full rounds have been completed
+let playersWhoAnsweredThisRound = new Set(); // track who has gone this round
 
 let gameStartTime = null;
 let gameTimerInterval = null;
@@ -377,6 +380,14 @@ function completeActiveBlock(isCorrect, player, statusOverride = null) {
 // ============================================
 
 function startGame() {
+  // Read time limit from setup screen
+  const timeLimitInput = document.getElementById('input-time-limit');
+  const parsedTime = parseInt(timeLimitInput ? timeLimitInput.value : '90', 10);
+  BASE_TIME_LIMIT = (isNaN(parsedTime) || parsedTime < 10) ? 90 : parsedTime;
+  currentTimeLimit = BASE_TIME_LIMIT;
+  completedRoundCount = 0;
+  playersWhoAnsweredThisRound = new Set();
+
   // initialize active pool with all participants
   activePool = participants.map(p => p.id);
   participants.forEach(p => {
@@ -582,7 +593,7 @@ const timerText = document.getElementById('timer-text');
 
 function startTimer() {
   clearInterval(timerInterval);
-  timeLeft = TIME_LIMIT;
+  timeLeft = currentTimeLimit;
   updateTimerUI();
   enableAnswerButtons(true);
 
@@ -598,7 +609,7 @@ function startTimer() {
 }
 
 function updateTimerUI() {
-  const pct = (timeLeft / TIME_LIMIT) * 100;
+  const pct = (timeLeft / currentTimeLimit) * 100;
   timerBar.style.width = pct + '%';
   timerText.textContent = timeLeft;
 }
@@ -656,6 +667,19 @@ function handleAnswer(originalIndex, btnEl) {
 function resolveAnswer(isCorrect, originalIndex) {
   stats.answered++;
   document.getElementById('stat-answered').textContent = stats.answered;
+
+  // Track round completion for time reduction
+  if (currentPlayer) {
+    playersWhoAnsweredThisRound.add(currentPlayer.id);
+    const activePlayers = activePool.length;
+    if (activePlayers > 0 && playersWhoAnsweredThisRound.size >= activePlayers) {
+      // Everyone has answered: full round complete
+      completedRoundCount++;
+      playersWhoAnsweredThisRound = new Set();
+      currentTimeLimit = Math.max(10, Math.round(BASE_TIME_LIMIT * Math.pow(0.85, completedRoundCount)));
+      showRoundTimerBadge(completedRoundCount, currentTimeLimit);
+    }
+  }
 
   if (isCorrect) {
     completeActiveBlock(true, currentPlayer);
@@ -879,6 +903,28 @@ document.getElementById('btn-reset-pool').addEventListener('click', () => {
 });
 
 // ============================================
+// ROUND TIMER BADGE
+// ============================================
+
+function showRoundTimerBadge(roundNum, newTime) {
+  let badge = document.getElementById('round-timer-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'round-timer-badge';
+    badge.className = 'round-timer-badge';
+    document.querySelector('.play-area').appendChild(badge);
+  }
+  badge.innerHTML = `⏱ Ronda ${roundNum} completada &mdash; nuevo l&iacute;mite: <strong>${newTime}s</strong>`;
+  badge.classList.remove('hidden', 'fade-out');
+  badge.classList.add('visible');
+  clearTimeout(badge._hideTimeout);
+  badge._hideTimeout = setTimeout(() => {
+    badge.classList.add('fade-out');
+    setTimeout(() => badge.classList.add('hidden'), 700);
+  }, 3000);
+}
+
+// ============================================
 // GAME END / WINNER SCREEN
 // ============================================
 
@@ -915,6 +961,9 @@ document.getElementById('btn-restart').addEventListener('click', () => {
   questionPool = [];
   usedQuestions = [];
   stats = { answered: 0, eliminated: 0 };
+  currentTimeLimit = BASE_TIME_LIMIT;
+  completedRoundCount = 0;
+  playersWhoAnsweredThisRound = new Set();
   document.getElementById('stat-answered').textContent = '0';
   document.getElementById('stat-eliminated').textContent = '0';
   document.getElementById('stat-time').textContent = '00:00';
