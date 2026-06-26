@@ -598,7 +598,7 @@ body {
   pointer-events: none;
   z-index: 1;
   opacity: 0.28;
-  background: url("assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat;
+  background: url("../../assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat;
   filter: blur(0.2px);
 }
 
@@ -633,7 +633,7 @@ body {
   padding: 0;
   border: 0;
   border-radius: 0;
-  background: url("assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat;
+  background: url("../../assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat;
   box-shadow: none;
   color: #fff;
   filter: drop-shadow(0 18px 28px rgba(0,0,0,0.28));
@@ -652,11 +652,11 @@ body {
 }
 
 #sidebar-active .sidebar-player.current ~ .sidebar-player {
-  background-image: url("assets/visuals/block-completed-blue.svg");
+  background-image: url("../../assets/visuals/block-completed-blue.svg");
 }
 
 .sidebar-player.current {
-  background-image: url("assets/visuals/block-active-dark.svg") !important;
+  background-image: url("../../assets/visuals/block-active-dark.svg") !important;
   filter:
     drop-shadow(0 0 18px rgba(245,154,35,0.44))
     drop-shadow(0 24px 36px rgba(0,0,0,0.34));
@@ -666,7 +666,7 @@ body {
 
 #sidebar-eliminated .sidebar-player,
 .sidebar-player.eliminated-item {
-  background-image: url("assets/visuals/block-eliminated-gray.svg") !important;
+  background-image: url("../../assets/visuals/block-eliminated-gray.svg") !important;
   opacity: 0.55;
   filter: grayscale(0.7) drop-shadow(0 14px 24px rgba(0,0,0,0.22));
 }
@@ -1132,7 +1132,7 @@ body {
   width: var(--rail-block-w);
   height: var(--rail-block-h);
   opacity: 0.28;
-  background: url("assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat;
+  background: url("../../assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat;
   border: 0;
   box-shadow: none;
   filter: blur(0.2px);
@@ -1164,7 +1164,7 @@ body {
   padding: 0;
   border: 0;
   border-radius: 0;
-  background: url("assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat !important;
+  background: url("../../assets/visuals/block-pending-green.svg") center / 100% 100% no-repeat !important;
   box-shadow: none;
   filter: drop-shadow(0 18px 28px rgba(0,0,0,0.28));
   transform: translateY(0);
@@ -1173,11 +1173,11 @@ body {
 }
 
 #sidebar-active .sidebar-player.current ~ .sidebar-player {
-  background-image: url("assets/visuals/block-completed-blue.svg") !important;
+  background-image: url("../../assets/visuals/block-completed-blue.svg") !important;
 }
 
 #sidebar-active .sidebar-player.current {
-  background-image: url("assets/visuals/block-active-dark.svg") !important;
+  background-image: url("../../assets/visuals/block-active-dark.svg") !important;
   filter:
     drop-shadow(0 0 18px rgba(245,154,35,0.44))
     drop-shadow(0 24px 36px rgba(0,0,0,0.34));
