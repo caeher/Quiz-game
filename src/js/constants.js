@@ -8,9 +8,15 @@ export const AVATAR_EMOJIS = ['🧑', '👩', '👨', '🧔', '👱', '👩‍�
 export const WILDCARD_TYPES = {
   question_context: {
     id: 'question_context',
-    label: 'Comodín',
+    label: 'Contexto',
     icon: '🃏',
     description: 'Muestra el texto completo de la pregunta'
+  },
+  fifty_fifty: {
+    id: 'fifty_fifty',
+    label: '50:50',
+    icon: '✂️',
+    description: 'Elimina 2 respuestas incorrectas'
   }
 };
 

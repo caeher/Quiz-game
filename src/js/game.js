@@ -268,10 +268,32 @@ export function eliminatePlayer(player) {
 export function updateWildcardButton() {
   if (!state.currentPlayer) return;
 
-  const available = hasWildcardAvailable(state.currentPlayer.id, 'question_context') &&
+  const availableContext = hasWildcardAvailable(state.currentPlayer.id, 'question_context') &&
                     !state.wildcardShownThisRound;
 
-  ui.updateWildcardButton(available);
+  ui.updateWildcardButton(availableContext);
+
+  const available5050 = hasWildcardAvailable(state.currentPlayer.id, 'fifty_fifty');
+  ui.updateWildcard5050Button(available5050);
+}
+
+export function useFiftyFiftyWildcard() {
+  if (!state.currentPlayer || !state.currentQuestion) return;
+  if (!hasWildcardAvailable(state.currentPlayer.id, 'fifty_fifty')) return;
+
+  markWildcardUsed(state.currentPlayer.id, 'fifty_fifty');
+  updateWildcardButton();
+
+  const allBtns = Array.from(document.querySelectorAll('.answer-btn'));
+  const incorrectBtns = allBtns.filter(btn => parseInt(btn.dataset.originalIndex) !== 0);
+  
+  shuffleArray(incorrectBtns);
+  const toRemove = incorrectBtns.slice(0, 2);
+  
+  toRemove.forEach(btn => {
+    btn.classList.add('answer-eliminated');
+    btn.disabled = true;
+  });
 }
 
 export function openWildcardModal() {

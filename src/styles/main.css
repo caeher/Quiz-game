@@ -1541,6 +1541,10 @@ body {
 }
 
 .answer-btn:disabled { cursor: default; opacity: 0.75; }
+.answer-btn.answer-eliminated {
+  visibility: hidden !important;
+  pointer-events: none;
+}
 
 /* ---------- Feedback text ---------- */
 .feedback-text {
@@ -1781,6 +1785,8 @@ body {
   top: 18px;
   right: 24px;
   z-index: 10;
+  display: flex;
+  gap: 10px;
 }
 
 .btn-wildcard {

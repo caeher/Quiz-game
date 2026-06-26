@@ -33,6 +33,7 @@ export const elements = {
   spotlightName: document.getElementById('spotlight-name'),
   spotlightLives: document.getElementById('spotlight-lives'),
   btnWildcard: document.getElementById('btn-wildcard'),
+  btnWildcard5050: document.getElementById('btn-wildcard-5050'),
   timerBar: document.getElementById('timer-bar'),
   timerText: document.getElementById('timer-text'),
   questionCategory: document.getElementById('question-category'),
@@ -198,6 +199,13 @@ export function updateWildcardButton(available) {
   elements.btnWildcard.disabled = !available;
   elements.btnWildcard.title = available
     ? 'Usar comodín: ver el texto completo de la pregunta'
+    : 'Comodín ya utilizado';
+}
+
+export function updateWildcard5050Button(available) {
+  elements.btnWildcard5050.disabled = !available;
+  elements.btnWildcard5050.title = available
+    ? 'Usar comodín: 50:50 (Eliminar 2 incorrectas)'
     : 'Comodín ya utilizado';
 }
 

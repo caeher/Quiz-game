@@ -11,6 +11,7 @@ import {
   nextRound, 
   openWildcardModal, 
   closeWildcardModal, 
+  useFiftyFiftyWildcard,
   stopConfetti 
 } from './game.js';
 import { AVATAR_COLORS } from './constants.js';
@@ -113,6 +114,7 @@ ui.elements.btnContinueElim.addEventListener('click', () => {
 
 ui.elements.btnWildcard.addEventListener('click', openWildcardModal);
 ui.elements.btnCloseWildcard.addEventListener('click', closeWildcardModal);
+ui.elements.btnWildcard5050.addEventListener('click', useFiftyFiftyWildcard);
 
 ui.elements.btnResetPool.addEventListener('click', () => {
   resetQuestionPool();
